@@ -34,17 +34,17 @@ player_img.set_colorkey((255, 255, 255))
 player_img = pygame.transform.scale(player_img, (25, 25))
 player_rect = pygame.Rect(100,100,player_img.get_width(),player_img.get_height())
 
-grass_img1 = pygame.image.load('sprites/terrain/grass/bisque/grass1.png')
+grass_img1 = pygame.image.load('sprites/terrain/grass/Bisque/grass1.png')
 grass_img1 = pygame.transform.scale(grass_img1, (35, 35))
-grass_img2 = pygame.image.load('sprites/terrain/grass/bisque/grass2.png')
+grass_img2 = pygame.image.load('sprites/terrain/grass/Bisque/grass2.png')
 grass_img2 = pygame.transform.scale(grass_img2, (35, 35))
-grass_img3 = pygame.image.load('sprites/terrain/grass/bisque/grass3.png')
+grass_img3 = pygame.image.load('sprites/terrain/grass/Bisque/grass3.png')
 grass_img3 = pygame.transform.scale(grass_img3, (35, 35))
-grass_img4 = pygame.image.load('sprites/terrain/grass/bisque/grass4.png')
+grass_img4 = pygame.image.load('sprites/terrain/grass/Bisque/grass4.png')
 grass_img4 = pygame.transform.scale(grass_img4, (35, 35))
-grass_img5 = pygame.image.load('sprites/terrain/grass/bisque/grass5.png')
+grass_img5 = pygame.image.load('sprites/terrain/grass/Bisque/grass5.png')
 grass_img5 = pygame.transform.scale(grass_img5, (35, 35))
-grass_img6 = pygame.image.load('sprites/terrain/grass/bisque/grass6.png')
+grass_img6 = pygame.image.load('sprites/terrain/grass/Bisque/grass6.png')
 grass_img6 = pygame.transform.scale(grass_img6, (35, 35))
 grass = [grass_img1, grass_img2, grass_img3, grass_img4, grass_img5, grass_img6]
 
@@ -58,23 +58,23 @@ dirt = [dirt_img1, dirt_img2, dirt_img3]
 
 bg0 = pygame.image.load('sprites/backgrounds/0.png').convert()
 bg0 = pygame.transform.scale(bg0, (2000, 2000))
-bg1 = pygame.image.load('sprites/backgrounds/1.png').convert()
+bg1 = pygame.image.load('sprites/backgrounds/1_bg.png').convert()
 bg1 = pygame.transform.scale(bg1, (1000, 500))
-bg2 = pygame.image.load('sprites/backgrounds/2_white.png').convert()
+bg2 = pygame.image.load('sprites/backgrounds/2_bg.png').convert()
 bg2 = pygame.transform.scale(bg2, (1000, 300))
-bg3 = pygame.image.load('sprites/backgrounds/3_white.png').convert()
+bg3 = pygame.image.load('sprites/backgrounds/3_bg.png').convert()
 bg3 = pygame.transform.scale(bg3, (1000, 260))
-bg4 = pygame.image.load('sprites/backgrounds/4_white.png').convert()
+bg4 = pygame.image.load('sprites/backgrounds/4_bg.png').convert()
 bg4 = pygame.transform.scale(bg4, (1000, 260))
 bg5 = pygame.image.load('sprites/backgrounds/5.png').convert()
 bg5 = pygame.transform.scale(bg5, (1000, 225))
 bg0.set_colorkey((255, 255, 255))
-bg1.set_colorkey((255, 255, 255))
-bg2.set_colorkey((255, 255, 255))
-bg3.set_colorkey((255, 255, 255))
-bg4.set_colorkey((255, 255, 255))
+bg1.set_colorkey((238,224,210))
+bg2.set_colorkey((225,181,147))
+bg3.set_colorkey((121,109,77))
+bg4.set_colorkey((156,122,93))
 bg5.set_colorkey((255, 255, 255))
-background_objects = [[0.4, 0.5, [-500,-1600,1000,1000]],[0.5, 0.6, [0,0,1000,1000]],[0.67, 0.7,[0,0,1000,1000]],[0.75, 0.8,[0,0,1000,1000]],[0.85, 0.9,[0,0,1000,1000]], [0.9, 0.97,[0,0,1000,1000]]]
+background_objects = [[0.4, 0.5, [-500,-1600,1000,1000]],[0.5, 0.6, [0,0,1000,1000]],[0.6, 0.7,[0,0,1000,1000]],[0.75, 0.8,[0,0,1000,1000]],[0.85, 0.9,[0,0,1000,1000]], [0.9, 0.97,[0,0,1000,1000]]]
 backgrounds = [bg0, bg1, bg2, bg3, bg4, bg5]
 
 factory = pygame.image.load('sprites/buildings/factory.png').convert()
@@ -218,7 +218,6 @@ while run:
                 up_pressed = True
             if event.key == 115: #S key
                 down_pressed = True
-                game_map[6][3] = 0
         if event.type == KEYUP:
             if event.key == 100: #D key
                 right_pressed = False
