@@ -116,17 +116,17 @@ gold_img9 = pygame.image.load('sprites/terrain/gold/gold9.png')
 gold_img9 = pygame.transform.scale(gold_img9, (35, 35))
 gold = [gold_img1, gold_img2, gold_img3, gold_img4, gold_img5, gold_img6, gold_img7, gold_img8, gold_img9]
 
-bg0 = pygame.image.load('sprites/backgrounds/0.png').convert()
+bg0 = pygame.image.load('sprites/backgrounds/aboveground/0.png').convert()
 bg0 = pygame.transform.scale(bg0, (2000, 2000))
-bg1 = pygame.image.load('sprites/backgrounds/1_bg.png').convert()
+bg1 = pygame.image.load('sprites/backgrounds/aboveground/1_bg.png').convert()
 bg1 = pygame.transform.scale(bg1, (1000, 500))
-bg2 = pygame.image.load('sprites/backgrounds/2_bg.png').convert()
+bg2 = pygame.image.load('sprites/backgrounds/aboveground/2_bg.png').convert()
 bg2 = pygame.transform.scale(bg2, (1000, 300))
-bg3 = pygame.image.load('sprites/backgrounds/3_bg.png').convert()
+bg3 = pygame.image.load('sprites/backgrounds/aboveground/3_bg.png').convert()
 bg3 = pygame.transform.scale(bg3, (1000, 260))
-bg4 = pygame.image.load('sprites/backgrounds/4_bg.png').convert()
+bg4 = pygame.image.load('sprites/backgrounds/aboveground/4_bg.png').convert()
 bg4 = pygame.transform.scale(bg4, (1000, 260))
-bg5 = pygame.image.load('sprites/backgrounds/5.png').convert()
+bg5 = pygame.image.load('sprites/backgrounds/aboveground/5.png').convert()
 bg5 = pygame.transform.scale(bg5, (1000, 225))
 bg0.set_colorkey((255, 255, 255))
 bg1.set_colorkey((238,224,210))
@@ -134,8 +134,12 @@ bg2.set_colorkey((225,181,147))
 bg3.set_colorkey((121,109,77))
 bg4.set_colorkey((156,122,93))
 bg5.set_colorkey((255, 255, 255))
-background_objects = [[0.4, 0.5, [-500,-1600,1000,1000]],[0.5, 0.6, [0,0,1000,1000]],[0.6, 0.7,[0,0,1000,1000]],[0.75, 0.8,[0,0,1000,1000]],[0.85, 0.9,[0,0,1000,1000]], [0.9, 0.97,[0,0,1000,1000]]]
 backgrounds = [bg0, bg1, bg2, bg3, bg4, bg5]
+background_objects = [[0.4, 0.5, [-500,-1600,1000,1000]],[0.5, 0.6, [0,0,1000,1000]],[0.6, 0.7,[0,0,1000,1000]],[0.75, 0.8,[0,0,1000,1000]],[0.85, 0.9,[0,0,1000,1000]], [0.9, 0.97,[0,0,1000,1000]]]
+
+undergroundbg = pygame.image.load('sprites/backgrounds/underground/3.png').convert()
+undergroundbg = pygame.transform.scale(undergroundbg, (1100, 450))
+undergroundbg_obj = [1, 1, [0,175,1000,1000]]
 
 factory = pygame.image.load('sprites/buildings/factory.png').convert()
 factory.set_colorkey((255, 255, 255))
@@ -194,14 +198,16 @@ while run:
     scroll[0] = int(scroll[0])
     scroll[1] = int(scroll[1])
 
-    #mousex, mousey = pygame.mouse.get_pos()
-
     counter = 0
     for background_object in background_objects:
         obj_rect = pygame.Rect(background_object[2][0]-scroll[0]*background_object[0],background_object[2][1]-scroll[1]*background_object[1],background_object[2][2],background_object[2][3])
         display.blit(backgrounds[counter],obj_rect)
         counter += 1
-
+    
+    for i in range(8):
+        undergroundbg_rect = pygame.Rect(undergroundbg_obj[2][0]-scroll[0]*undergroundbg_obj[0],undergroundbg_obj[2][1]+(i*450)-scroll[1]*undergroundbg_obj[1],undergroundbg_obj[2][2],undergroundbg_obj[2][3])
+        display.blit(undergroundbg,undergroundbg_rect)
+    
     display.blit(factory,(500-scroll[0],20-scroll[1], 200, 200))
     display.blit(garage,(840-scroll[0],65-scroll[1], 200, 200))
     display.blit(gas_station,(200-scroll[0],55-scroll[1], 200, 200))
