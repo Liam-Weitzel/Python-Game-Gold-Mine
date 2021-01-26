@@ -25,7 +25,7 @@ for h in range(0, map_height):
       map[h][w] = 2
     elif (h < grasslevel): #border blocker
       if (w == 0 or w == map_width-1):
-          map[h][w] = 7
+          map[h][w] = 6
       else:
           map[h][w] = 0
 

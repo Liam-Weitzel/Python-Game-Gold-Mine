@@ -303,7 +303,8 @@ while run:
                     curr_closest_tile = tile
                     curr_closest_xy = collidingtilesxy[xy_count]
                 xy_count += 1
-            game_map[curr_closest_xy[1]][curr_closest_xy[0]] = '0'
+            if (game_map[curr_closest_xy[1]][curr_closest_xy[0]] != '6'):
+                game_map[curr_closest_xy[1]][curr_closest_xy[0]] = '0'
         if right_pressed == True and collisions['right'] == True:
             curr_closest_tile = collidingtiles[0]
             curr_closest_int = grass[0].get_width()
@@ -316,7 +317,8 @@ while run:
                     curr_closest_tile = tile
                     curr_closest_xy = collidingtilesxy[xy_count]
                 xy_count += 1
-            game_map[curr_closest_xy[1]-1][curr_closest_xy[0]+1] = '0'
+            if (game_map[curr_closest_xy[1]-1][curr_closest_xy[0]+1] != '6'):
+                game_map[curr_closest_xy[1]-1][curr_closest_xy[0]+1] = '0'
         if left_pressed == True and collisions['left'] == True:
             curr_closest_tile = collidingtiles[0]
             curr_closest_int = grass[0].get_width()
@@ -329,7 +331,8 @@ while run:
                     curr_closest_tile = tile
                     curr_closest_xy = collidingtilesxy[xy_count]
                 xy_count += 1
-            game_map[curr_closest_xy[1]-1][curr_closest_xy[0]-1] = '0'
+            if (game_map[curr_closest_xy[1]-1][curr_closest_xy[0]-1] != '6'):
+                game_map[curr_closest_xy[1]-1][curr_closest_xy[0]-1] = '0'
     else:
         velocity[0] = velocity[0]*0.95
 
