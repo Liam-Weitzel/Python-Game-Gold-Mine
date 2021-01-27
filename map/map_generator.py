@@ -24,10 +24,7 @@ for h in range(0, map_height):
     elif (h == grasslevel): #grass tile
       map[h][w] = 2
     elif (h < grasslevel): #border blocker
-      if (w == 0 or w == map_width-1):
-          map[h][w] = 6
-      else:
-          map[h][w] = 0
+      map[h][w] = 0
 
 maptxtfile = open('map.txt','w')
 

@@ -1,6 +1,7 @@
 import pygame, sys
-
+from spritesheets.spritesheet import Spritesheet
 from pygame.locals import *
+
 clock = pygame.time.Clock()
 pygame.init()
 
@@ -29,93 +30,37 @@ def load_map(path):
 
 game_map, seed_map = load_map('map/map.txt')
 
+buildings_spritesheet = Spritesheet('spritesheets/buildings')
+buildings = [buildings_spritesheet.parse_sprite('factory.png', 255, 255, 255), buildings_spritesheet.parse_sprite('garage.png', 255, 255, 255),buildings_spritesheet.parse_sprite('gas-station.png', 255, 255, 255)]
+buildings[2] = pygame.transform.scale(buildings[2], (120, 120))
+
 player_img = pygame.image.load('sprites/player/version1/player.png').convert()
 player_img.set_colorkey((255, 255, 255))
 player_img = pygame.transform.scale(player_img, (25, 25))
 player_rect = pygame.Rect(100,100,player_img.get_width(),player_img.get_height())
 
-grass_img1 = pygame.image.load('sprites/terrain/grass/Bisque/grass1.png')
-grass_img1 = pygame.transform.scale(grass_img1, (35, 35))
-grass_img2 = pygame.image.load('sprites/terrain/grass/Bisque/grass2.png')
-grass_img2 = pygame.transform.scale(grass_img2, (35, 35))
-grass_img3 = pygame.image.load('sprites/terrain/grass/Bisque/grass3.png')
-grass_img3 = pygame.transform.scale(grass_img3, (35, 35))
-grass_img4 = pygame.image.load('sprites/terrain/grass/Bisque/grass4.png')
-grass_img4 = pygame.transform.scale(grass_img4, (35, 35))
-grass_img5 = pygame.image.load('sprites/terrain/grass/Bisque/grass5.png')
-grass_img5 = pygame.transform.scale(grass_img5, (35, 35))
-grass_img6 = pygame.image.load('sprites/terrain/grass/Bisque/grass6.png')
-grass_img6 = pygame.transform.scale(grass_img6, (35, 35))
-grass = [grass_img1, grass_img2, grass_img3, grass_img4, grass_img5, grass_img6]
+terrain_spritesheet = Spritesheet('spritesheets/terrain')
+grass = [terrain_spritesheet.parse_sprite('grass1.png', 255, 255, 255), terrain_spritesheet.parse_sprite('grass2.png', 255, 255, 255),terrain_spritesheet.parse_sprite('grass3.png', 255, 255, 255),terrain_spritesheet.parse_sprite('grass4.png', 255, 255, 255),terrain_spritesheet.parse_sprite('grass5.png', 255, 255, 255),terrain_spritesheet.parse_sprite('grass6.png', 255, 255, 255)]
+for i in range(0, len(grass)):
+    grass[i] = pygame.transform.scale(grass[i], (35, 35))
 
-dirt_img1 = pygame.image.load('sprites/terrain/dirt/dirt1.png')
-dirt_img1 = pygame.transform.scale(dirt_img1, (35, 35))
-dirt_img2 = pygame.image.load('sprites/terrain/dirt/dirt2.png')
-dirt_img2 = pygame.transform.scale(dirt_img2, (35, 35))
-dirt_img3 = pygame.image.load('sprites/terrain/dirt/dirt3.png')
-dirt_img3 = pygame.transform.scale(dirt_img2, (35, 35))
-dirt = [dirt_img1, dirt_img2, dirt_img3]
+dirt = [terrain_spritesheet.parse_sprite('dirt1.png', 255, 255, 255), terrain_spritesheet.parse_sprite('dirt2.png', 255, 255, 255),terrain_spritesheet.parse_sprite('dirt3.png', 255, 255, 255)]
+for i in range(0, len(dirt)):
+    dirt[i] = pygame.transform.scale(dirt[i], (35, 35))
 
-copper_img1 = pygame.image.load('sprites/terrain/copper/copper1.png')
-copper_img1 = pygame.transform.scale(copper_img1, (35, 35))
-copper_img2 = pygame.image.load('sprites/terrain/copper/copper2.png')
-copper_img2 = pygame.transform.scale(copper_img2, (35, 35))
-copper_img3 = pygame.image.load('sprites/terrain/copper/copper3.png')
-copper_img3 = pygame.transform.scale(copper_img3, (35, 35))
-copper_img4 = pygame.image.load('sprites/terrain/copper/copper4.png')
-copper_img4 = pygame.transform.scale(copper_img4, (35, 35))
-copper_img5 = pygame.image.load('sprites/terrain/copper/copper5.png')
-copper_img5 = pygame.transform.scale(copper_img5, (35, 35))
-copper_img6 = pygame.image.load('sprites/terrain/copper/copper6.png')
-copper_img6 = pygame.transform.scale(copper_img6, (35, 35))
-copper_img7 = pygame.image.load('sprites/terrain/copper/copper7.png')
-copper_img7 = pygame.transform.scale(copper_img7, (35, 35))
-copper_img8 = pygame.image.load('sprites/terrain/copper/copper8.png')
-copper_img8 = pygame.transform.scale(copper_img8, (35, 35))
-copper_img9 = pygame.image.load('sprites/terrain/copper/copper9.png')
-copper_img9 = pygame.transform.scale(copper_img9, (35, 35))
-copper = [copper_img1, copper_img2, copper_img3, copper_img4, copper_img5, copper_img6, copper_img7, copper_img8, copper_img9]
+copper = [terrain_spritesheet.parse_sprite('copper1.png', 255, 255, 255), terrain_spritesheet.parse_sprite('copper2.png', 255, 255, 255),terrain_spritesheet.parse_sprite('copper3.png', 255, 255, 255),terrain_spritesheet.parse_sprite('copper4.png', 255, 255, 255),terrain_spritesheet.parse_sprite('copper5.png', 255, 255, 255),terrain_spritesheet.parse_sprite('copper6.png', 255, 255, 255),terrain_spritesheet.parse_sprite('copper7.png', 255, 255, 255),terrain_spritesheet.parse_sprite('copper8.png', 255, 255, 255),terrain_spritesheet.parse_sprite('copper9.png', 255, 255, 255)]
+for i in range(0, len(copper)):
+    copper[i] = pygame.transform.scale(copper[i], (35, 35))
 
-iron_img1 = pygame.image.load('sprites/terrain/iron/iron1.png')
-iron_img1 = pygame.transform.scale(iron_img1, (35, 35))
-iron_img2 = pygame.image.load('sprites/terrain/iron/iron2.png')
-iron_img2 = pygame.transform.scale(iron_img2, (35, 35))
-iron_img3 = pygame.image.load('sprites/terrain/iron/iron3.png')
-iron_img3 = pygame.transform.scale(iron_img3, (35, 35))
-iron_img4 = pygame.image.load('sprites/terrain/iron/iron4.png')
-iron_img4 = pygame.transform.scale(iron_img4, (35, 35))
-iron_img5 = pygame.image.load('sprites/terrain/iron/iron5.png')
-iron_img5 = pygame.transform.scale(iron_img5, (35, 35))
-iron_img6 = pygame.image.load('sprites/terrain/iron/iron6.png')
-iron_img6 = pygame.transform.scale(iron_img6, (35, 35))
-iron_img7 = pygame.image.load('sprites/terrain/iron/iron7.png')
-iron_img7 = pygame.transform.scale(iron_img7, (35, 35))
-iron_img8 = pygame.image.load('sprites/terrain/iron/iron8.png')
-iron_img8 = pygame.transform.scale(iron_img8, (35, 35))
-iron_img9 = pygame.image.load('sprites/terrain/iron/iron9.png')
-iron_img9 = pygame.transform.scale(iron_img9, (35, 35))
-iron = [iron_img1, iron_img2, iron_img3, iron_img4, iron_img5, iron_img6, iron_img7, iron_img8, iron_img9]
+iron = [terrain_spritesheet.parse_sprite('iron1.png', 255, 255, 255), terrain_spritesheet.parse_sprite('iron2.png', 255, 255, 255),terrain_spritesheet.parse_sprite('iron3.png', 255, 255, 255),terrain_spritesheet.parse_sprite('iron4.png', 255, 255, 255),terrain_spritesheet.parse_sprite('iron5.png', 255, 255, 255),terrain_spritesheet.parse_sprite('iron6.png', 255, 255, 255),terrain_spritesheet.parse_sprite('iron7.png', 255, 255, 255),terrain_spritesheet.parse_sprite('iron8.png', 255, 255, 255),terrain_spritesheet.parse_sprite('iron9.png', 255, 255, 255)]
+for i in range(0, len(iron)):
+    iron[i] = pygame.transform.scale(iron[i], (35, 35))
 
-gold_img1 = pygame.image.load('sprites/terrain/gold/gold1.png')
-gold_img1 = pygame.transform.scale(gold_img1, (35, 35))
-gold_img2 = pygame.image.load('sprites/terrain/gold/gold2.png')
-gold_img2 = pygame.transform.scale(gold_img2, (35, 35))
-gold_img3 = pygame.image.load('sprites/terrain/gold/gold3.png')
-gold_img3 = pygame.transform.scale(gold_img3, (35, 35))
-gold_img4 = pygame.image.load('sprites/terrain/gold/gold4.png')
-gold_img4 = pygame.transform.scale(gold_img4, (35, 35))
-gold_img5 = pygame.image.load('sprites/terrain/gold/gold5.png')
-gold_img5 = pygame.transform.scale(gold_img5, (35, 35))
-gold_img6 = pygame.image.load('sprites/terrain/gold/gold6.png')
-gold_img6 = pygame.transform.scale(gold_img6, (35, 35))
-gold_img7 = pygame.image.load('sprites/terrain/gold/gold7.png')
-gold_img7 = pygame.transform.scale(gold_img7, (35, 35))
-gold_img8 = pygame.image.load('sprites/terrain/gold/gold8.png')
-gold_img8 = pygame.transform.scale(gold_img8, (35, 35))
-gold_img9 = pygame.image.load('sprites/terrain/gold/gold9.png')
-gold_img9 = pygame.transform.scale(gold_img9, (35, 35))
-gold = [gold_img1, gold_img2, gold_img3, gold_img4, gold_img5, gold_img6, gold_img7, gold_img8, gold_img9]
+gold = [terrain_spritesheet.parse_sprite('gold1.png', 255, 255, 255), terrain_spritesheet.parse_sprite('gold2.png', 255, 255, 255),terrain_spritesheet.parse_sprite('gold3.png', 255, 255, 255),terrain_spritesheet.parse_sprite('gold4.png', 255, 255, 255),terrain_spritesheet.parse_sprite('gold5.png', 255, 255, 255),terrain_spritesheet.parse_sprite('gold6.png', 255, 255, 255),terrain_spritesheet.parse_sprite('gold7.png', 255, 255, 255),terrain_spritesheet.parse_sprite('gold8.png', 255, 255, 255),terrain_spritesheet.parse_sprite('gold9.png', 255, 255, 255)]
+for i in range(0, len(gold)):
+    gold[i] = pygame.transform.scale(gold[i], (35, 35))
 
+#background images are too large to put into a spritesheet
 bg0 = pygame.image.load('sprites/backgrounds/aboveground/0.png').convert()
 bg0 = pygame.transform.scale(bg0, (2000, 2000))
 bg1 = pygame.image.load('sprites/backgrounds/aboveground/1_bg.png').convert()
@@ -140,14 +85,6 @@ background_objects = [[0.4, 0.5, [-500,-1600,1000,1000]],[0.5, 0.6, [0,0,1000,10
 undergroundbg = pygame.image.load('sprites/backgrounds/underground/3.png').convert()
 undergroundbg = pygame.transform.scale(undergroundbg, (1100, 450))
 undergroundbg_obj = [1, 1, [0,175,1000,1000]]
-
-factory = pygame.image.load('sprites/buildings/factory.png').convert()
-factory.set_colorkey((255, 255, 255))
-garage = pygame.image.load('sprites/buildings/garage.png').convert()
-garage.set_colorkey((255, 255, 255))
-gas_station = pygame.image.load('sprites/buildings/gas-station.png').convert()
-gas_station.set_colorkey((255, 255, 255))
-gas_station = pygame.transform.scale(gas_station, (120, 120))
 
 def collision_test(rect,tiles, tile_xy):
     hit_list = []
@@ -186,12 +123,12 @@ run = True
 while run:
     display.fill((255,255,255))
 
-    if (player_rect.x > VIEWPORT_SIZE[0]/2 and player_rect.x < ((len(game_map[0]) * grass_img1.get_width()) - VIEWPORT_SIZE[0]/2 - player_img.get_width())):
+    if (player_rect.x > VIEWPORT_SIZE[0]/2 and player_rect.x < ((len(game_map[0]) * grass[0].get_width()) - VIEWPORT_SIZE[0]/2 - player_img.get_width())):
         true_scroll[0] += (player_rect.x-true_scroll[0]-(VIEWPORT_SIZE[0]/2)+(player_img.get_width()/2))/15
     elif (player_rect.x < VIEWPORT_SIZE[0]/2):
         true_scroll[0] += (VIEWPORT_SIZE[0]/2-true_scroll[0]-(VIEWPORT_SIZE[0]/2)+(player_img.get_width()/2))/15
-    elif (player_rect.x > ((len(game_map[0]) * grass_img1.get_width()) - VIEWPORT_SIZE[0]/2 - player_img.get_width())):
-        true_scroll[0] += (((len(game_map[0]) * grass_img1.get_width()) - VIEWPORT_SIZE[0]/2 - player_img.get_width())-true_scroll[0]-(VIEWPORT_SIZE[0]/2)+(player_img.get_width()/2))/15
+    elif (player_rect.x > ((len(game_map[0]) * grass[0].get_width()) - VIEWPORT_SIZE[0]/2 - player_img.get_width())):
+        true_scroll[0] += (((len(game_map[0]) * grass[0].get_width()) - VIEWPORT_SIZE[0]/2 - player_img.get_width())-true_scroll[0]-(VIEWPORT_SIZE[0]/2)+(player_img.get_width()/2))/15
 
     true_scroll[1] += (player_rect.y-true_scroll[1]-(VIEWPORT_SIZE[1]/2)+(player_img.get_height()/2))/20
     scroll = true_scroll.copy()
@@ -204,13 +141,13 @@ while run:
         display.blit(backgrounds[counter],obj_rect)
         counter += 1
     
-    for i in range(8):
+    for i in range(8): #8 = map height
         undergroundbg_rect = pygame.Rect(undergroundbg_obj[2][0]-scroll[0]*undergroundbg_obj[0],undergroundbg_obj[2][1]+(i*450)-scroll[1]*undergroundbg_obj[1],undergroundbg_obj[2][2],undergroundbg_obj[2][3])
         display.blit(undergroundbg,undergroundbg_rect)
     
-    display.blit(factory,(500-scroll[0],20-scroll[1], 200, 200))
-    display.blit(garage,(840-scroll[0],65-scroll[1], 200, 200))
-    display.blit(gas_station,(200-scroll[0],55-scroll[1], 200, 200))
+    display.blit(buildings[0],(500-scroll[0],20-scroll[1], 200, 200))
+    display.blit(buildings[1],(840-scroll[0],65-scroll[1], 200, 200))
+    display.blit(buildings[2],(200-scroll[0],55-scroll[1], 200, 200))
 
     tile_rects = []
     tile_xy = []
@@ -260,7 +197,7 @@ while run:
                     golditer += 1
             if tile != '0':
                 tile_xy.append((x, y))
-                tile_rects.append(pygame.Rect(x*grass_img1.get_width(),y*grass_img1.get_width(),grass_img1.get_width(),grass_img1.get_width()))
+                tile_rects.append(pygame.Rect(x*grass[0].get_width(),y*grass[0].get_width(),grass[0].get_width(),grass[0].get_width()))
             x += 1
         y += 1
 
