@@ -1,4 +1,4 @@
-import pygame, sys
+import pygame, sys, random
 from spritesheets.spritesheet import Spritesheet
 from pygame.locals import *
 
@@ -16,7 +16,41 @@ right_pressed = left_pressed = up_pressed = down_pressed = False
 velocity = [0,0]
 true_scroll = [0,0]
 building_tiles_x = [6, 7, 8, 14, 15, 16, 17, 18, 19, 20, 21, 24, 25, 26, 27, 28]
-building_tiles_y = 5
+map_width = 30
+map_height_chunk = 100
+grasslevel = 5
+
+def generate_map(path):
+    map = [[0] * map_width for i in range(map_height_chunk)]
+
+    for h in range(0, map_height_chunk):
+        for w in range(0, map_width):
+            if h > grasslevel:
+                r = random.random()
+                if r > 0.75:  # ore or blank tile
+                    if r > 0.98:
+                        map[h][w] = 5
+                    elif r > 0.95:
+                        map[h][w] = 4
+                    elif r > 0.90:
+                        map[h][w] = 3
+                    elif r > 0.75:
+                        map[h][w] = 0
+                else:  # dirt tile
+                    map[h][w] = 1
+            elif h == grasslevel:  # grass tile
+                map[h][w] = 2
+            elif h < grasslevel:  # border blocker
+                map[h][w] = 0
+
+    maptxtfile = open(path, 'w')
+
+    for h in range(0, map_height_chunk):
+        for w in range(0, map_width):
+            maptxtfile.write(str(map[h][w]))
+        maptxtfile.write('\n')
+
+    maptxtfile.close()
 
 def load_map(path):
     f = open(path,'r')
@@ -30,7 +64,7 @@ def load_map(path):
         seed_map.append(list(row))
     return game_map, seed_map
 
-game_map, seed_map = load_map('map/map.txt')
+game_map, seed_map = load_map('map.txt')
 
 def load_sprites(spritesheet, filenames, r, g, b, scalex, scaley):
     arr = []
@@ -225,13 +259,13 @@ def remove_tile(player_rect, collisions, collidingtiles, collidingtilesxy):
             curr_closest_xy = collidingtilesxy[xy_count]
         xy_count += 1
     if down_pressed == True and collisions['bottom'] == True:
-        if (curr_closest_xy[0] not in building_tiles_x) or (curr_closest_xy[1] != building_tiles_y):
+        if (curr_closest_xy[0] not in building_tiles_x) or (curr_closest_xy[1] != grasslevel):
             game_map[curr_closest_xy[1]][curr_closest_xy[0]] = '0'
     elif right_pressed == True and collisions['right'] == True:
-        if (curr_closest_xy[0]+1 not in building_tiles_x) or (curr_closest_xy[1]-1 != building_tiles_y):
+        if (curr_closest_xy[0]+1 not in building_tiles_x) or (curr_closest_xy[1]-1 != grasslevel):
             game_map[curr_closest_xy[1] - 1][curr_closest_xy[0] + 1] = '0'
     elif left_pressed == True and collisions['left'] == True:
-        if (curr_closest_xy[0]-1 not in building_tiles_x) or (curr_closest_xy[1]-1 != building_tiles_y):
+        if (curr_closest_xy[0]-1 not in building_tiles_x) or (curr_closest_xy[1]-1 != grasslevel):
             game_map[curr_closest_xy[1] - 1][curr_closest_xy[0] - 1] = '0'
 
 def movement(player_rect):
@@ -272,7 +306,7 @@ def movement(player_rect):
     else:
         velocity[0] = velocity[0] * 0.95
 
-    if player_rect[0] > 30*35-25 or player_rect[0] < 0: #limits player movement in X axis, 30 is map width in tiles, 35 is tile width in px
+    if player_rect[0] > map_width*35-25 or player_rect[0] < 0: #limits player movement in X axis, 30 is map width in tiles, 35 is tile width in px
         velocity[0] = 0
 
 run = True
