@@ -15,6 +15,8 @@ pygame.display.set_caption("Gold Mine")
 right_pressed = left_pressed = up_pressed = down_pressed = False
 velocity = [0,0]
 true_scroll = [0,0]
+building_tiles_x = [6, 7, 8, 14, 15, 16, 17, 18, 19, 20, 21, 24, 25, 26, 27, 28]
+building_tiles_y = 5
 
 def load_map(path):
     f = open(path,'r')
@@ -116,11 +118,11 @@ def move(rect,movement,tiles, tile_xy):
     return rect, collision_types, hit_list, hit_list_xy
 
 def camera_movement():
-    if (player_rect.x > VIEWPORT_SIZE[0]/2 and player_rect.x < ((len(game_map[0]) * grass[0].get_width()) - VIEWPORT_SIZE[0]/2 - player_img.get_width())):
+    if VIEWPORT_SIZE[0]/2 < player_rect.x < ((len(game_map[0]) * grass[0].get_width()) - VIEWPORT_SIZE[0] / 2 - player_img.get_width()):
         true_scroll[0] += (player_rect.x-true_scroll[0]-(VIEWPORT_SIZE[0]/2)+(player_img.get_width()/2))/15
-    elif (player_rect.x < VIEWPORT_SIZE[0]/2):
+    elif player_rect.x < VIEWPORT_SIZE[0]/2:
         true_scroll[0] += (VIEWPORT_SIZE[0]/2-true_scroll[0]-(VIEWPORT_SIZE[0]/2)+(player_img.get_width()/2))/15
-    elif (player_rect.x > ((len(game_map[0]) * grass[0].get_width()) - VIEWPORT_SIZE[0]/2 - player_img.get_width())):
+    elif player_rect.x > ((len(game_map[0]) * grass[0].get_width()) - VIEWPORT_SIZE[0]/2 - player_img.get_width()):
         true_scroll[0] += (((len(game_map[0]) * grass[0].get_width()) - VIEWPORT_SIZE[0]/2 - player_img.get_width())-true_scroll[0]-(VIEWPORT_SIZE[0]/2)+(player_img.get_width()/2))/15
 
     true_scroll[1] += (player_rect.y - true_scroll[1] - (VIEWPORT_SIZE[1] / 2) + (player_img.get_height() / 2)) / 20
@@ -164,7 +166,7 @@ def blit_sprites(scroll):
                 if tile == '1':
                     display.blit(dirt[dirtiter], (
                     x * dirt[dirtiter].get_width() - scroll[0], y * dirt[dirtiter].get_width() - scroll[1]))
-                if (dirtiter == len(dirt) - 1):
+                if dirtiter == len(dirt) - 1:
                     dirtiter = 0
                 else:
                     dirtiter += 1
@@ -172,7 +174,7 @@ def blit_sprites(scroll):
                 if tile == '2':
                     display.blit(grass[grassiter], (
                     x * grass[grassiter].get_width() - scroll[0], y * grass[grassiter].get_width() - scroll[1]))
-                if (grassiter == len(grass) - 1):
+                if grassiter == len(grass) - 1:
                     grassiter = 0
                 else:
                     grassiter += 1
@@ -180,7 +182,7 @@ def blit_sprites(scroll):
                 if tile == '3':
                     display.blit(copper[copperiter], (
                     x * copper[copperiter].get_width() - scroll[0], y * copper[copperiter].get_width() - scroll[1]))
-                if (copperiter == len(copper) - 1):
+                if copperiter == len(copper) - 1:
                     copperiter = 0
                 else:
                     copperiter += 1
@@ -188,7 +190,7 @@ def blit_sprites(scroll):
                 if tile == '4':
                     display.blit(iron[ironiter], (
                     x * iron[ironiter].get_width() - scroll[0], y * iron[ironiter].get_width() - scroll[1]))
-                if (ironiter == len(iron) - 1):
+                if ironiter == len(iron) - 1:
                     ironiter = 0
                 else:
                     ironiter += 1
@@ -196,7 +198,7 @@ def blit_sprites(scroll):
                 if tile == '5':
                     display.blit(gold[golditer], (
                     x * gold[golditer].get_width() - scroll[0], y * gold[golditer].get_width() - scroll[1]))
-                if (golditer == len(gold) - 1):
+                if golditer == len(gold) - 1:
                     golditer = 0
                 else:
                     golditer += 1
@@ -210,61 +212,37 @@ def blit_sprites(scroll):
     return tile_rects, tile_xy
 
 def remove_tile(player_rect, collisions, collidingtiles, collidingtilesxy):
-    if down_pressed == True:
-        curr_closest_tile = collidingtiles[0]
-        curr_closest_int = grass[0].get_width()
-        curr_closest_xy = collidingtilesxy[0]
-        xy_count = 0
-        for tile in collidingtiles:
-            closecheck = abs(
-                (tile[0] + (grass[0].get_width() / 2)) - (player_rect[0] + (player_img.get_width() / 2)))
-            if (min(closecheck, curr_closest_int) == closecheck):
-                curr_closest_int = closecheck
-                curr_closest_tile = tile
-                curr_closest_xy = collidingtilesxy[xy_count]
-            xy_count += 1
-        if (game_map[curr_closest_xy[1]][curr_closest_xy[0]] != '6'):
+    curr_closest_tile = collidingtiles[0]
+    curr_closest_int = grass[0].get_width()
+    curr_closest_xy = collidingtilesxy[0]
+    xy_count = 0
+    for tile in collidingtiles:
+        closecheck = abs(
+            (tile[0] + (grass[0].get_width() / 2)) - (player_rect[0] + (player_img.get_width() / 2)))
+        if (min(closecheck, curr_closest_int) == closecheck):
+            curr_closest_int = closecheck
+            curr_closest_tile = tile
+            curr_closest_xy = collidingtilesxy[xy_count]
+        xy_count += 1
+    if down_pressed == True and collisions['bottom'] == True:
+        if (curr_closest_xy[0] not in building_tiles_x) or (curr_closest_xy[1] != building_tiles_y):
             game_map[curr_closest_xy[1]][curr_closest_xy[0]] = '0'
-    if right_pressed == True and collisions['right'] == True:
-        curr_closest_tile = collidingtiles[0]
-        curr_closest_int = grass[0].get_width()
-        curr_closest_xy = collidingtilesxy[0]
-        xy_count = 0
-        for tile in collidingtiles:
-            closecheck = abs(
-                (tile[0] + (grass[0].get_width() / 2)) - (player_rect[0] + (player_img.get_width() / 2)))
-            if (min(closecheck, curr_closest_int) == closecheck):
-                curr_closest_int = closecheck
-                curr_closest_tile = tile
-                curr_closest_xy = collidingtilesxy[xy_count]
-            xy_count += 1
-        if (game_map[curr_closest_xy[1] - 1][curr_closest_xy[0] + 1] != '6'):
+    elif right_pressed == True and collisions['right'] == True:
+        if (curr_closest_xy[0]+1 not in building_tiles_x) or (curr_closest_xy[1]-1 != building_tiles_y):
             game_map[curr_closest_xy[1] - 1][curr_closest_xy[0] + 1] = '0'
-    if left_pressed == True and collisions['left'] == True:
-        curr_closest_tile = collidingtiles[0]
-        curr_closest_int = grass[0].get_width()
-        curr_closest_xy = collidingtilesxy[0]
-        xy_count = 0
-        for tile in collidingtiles:
-            closecheck = abs(
-                (tile[0] + (grass[0].get_width() / 2)) - (player_rect[0] + (player_img.get_width() / 2)))
-            if (min(closecheck, curr_closest_int) == closecheck):
-                curr_closest_int = closecheck
-                curr_closest_tile = tile
-                curr_closest_xy = collidingtilesxy[xy_count]
-            xy_count += 1
-        if (game_map[curr_closest_xy[1] - 1][curr_closest_xy[0] - 1] != '6'):
+    elif left_pressed == True and collisions['left'] == True:
+        if (curr_closest_xy[0]-1 not in building_tiles_x) or (curr_closest_xy[1]-1 != building_tiles_y):
             game_map[curr_closest_xy[1] - 1][curr_closest_xy[0] - 1] = '0'
 
 def movement(player_rect):
     player_movement = [0, 0]
-    if right_pressed == True:
+    if right_pressed:
         velocity[0] += 0.3
-    if left_pressed == True:
+    if left_pressed:
         velocity[0] -= 0.3
-    if up_pressed == True:
+    if up_pressed:
         velocity[1] -= 0.1
-    if down_pressed == True:
+    if down_pressed:
         velocity[1] += 0.2
     if up_pressed == False:
         velocity[1] += 0.3
@@ -293,6 +271,9 @@ def movement(player_rect):
         remove_tile(player_rect, collisions, collidingtiles, collidingtilesxy)
     else:
         velocity[0] = velocity[0] * 0.95
+
+    if player_rect[0] > 30*35-25 or player_rect[0] < 0: #limits player movement in X axis, 30 is map width in tiles, 35 is tile width in px
+        velocity[0] = 0
 
 run = True
 while run:
