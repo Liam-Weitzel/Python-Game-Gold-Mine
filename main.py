@@ -59,12 +59,34 @@ def load_map(path):
     data = data.split('\n')
     game_map = []
     seed_map = []
-    for row in data:
-        game_map.append(list(row))
-        seed_map.append(list(row))
+    for row in range(0, len(data)-1):
+        game_map.append(list(data[row]))
+        seed_map.append(list(data[row]))
     return game_map, seed_map
 
 game_map, seed_map = load_map('map.txt')
+
+def generate_chunk(height, width):
+    map_chunk = [[0] * width for i in range(height)]
+
+    for h in range(0, height):
+        for w in range(0, width):
+            r = random.random()
+            if r > 0.75:  # ore or blank tile
+                if r > 0.98:
+                    map_chunk[h][w] = '5'
+                elif r > 0.95:
+                    map_chunk[h][w] = '4'
+                elif r > 0.90:
+                    map_chunk[h][w] = '3'
+                elif r > 0.75:
+                    map_chunk[h][w] = '0'
+            else:  # dirt tile
+                map_chunk[h][w] = '1'
+
+    for row in map_chunk:
+        game_map.append(row)
+        seed_map.append(row)
 
 def load_sprites(spritesheet, filenames, r, g, b, scalex, scaley):
     arr = []
@@ -175,7 +197,7 @@ def blit_sprites(scroll):
         display.blit(backgrounds[counter], obj_rect)
         counter += 1
 
-    for i in range(8):  # 8 = map height
+    for i in range(0,int(len(game_map)/100)*8):  # 8 = map height
         undergroundbg_rect = pygame.Rect(undergroundbg_obj[2][0] - scroll[0] * undergroundbg_obj[0],
                                          undergroundbg_obj[2][1] + (i * 450) - scroll[1] * undergroundbg_obj[1],
                                          undergroundbg_obj[2][2], undergroundbg_obj[2][3])
@@ -258,6 +280,7 @@ def remove_tile(player_rect, collisions, collidingtiles, collidingtilesxy):
             curr_closest_tile = tile
             curr_closest_xy = collidingtilesxy[xy_count]
         xy_count += 1
+
     if down_pressed == True and collisions['bottom'] == True:
         if (curr_closest_xy[0] not in building_tiles_x) or (curr_closest_xy[1] != grasslevel):
             game_map[curr_closest_xy[1]][curr_closest_xy[0]] = '0'
@@ -268,6 +291,10 @@ def remove_tile(player_rect, collisions, collidingtiles, collidingtilesxy):
         if (curr_closest_xy[0]-1 not in building_tiles_x) or (curr_closest_xy[1]-1 != grasslevel):
             game_map[curr_closest_xy[1] - 1][curr_closest_xy[0] - 1] = '0'
 
+    if curr_closest_xy[1] >= len(game_map)-10:
+        generate_chunk(map_height_chunk, map_width)
+        #a = [(i,j) for i, row in enumerate(seed_map) for j, x in enumerate(row) if game_map[i][j] != x]
+        #print(a)
 def movement(player_rect):
     player_movement = [0, 0]
     if right_pressed:
