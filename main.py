@@ -8,7 +8,7 @@ pygame.init()
 GAMEWINDOW_SIZE = (1200,800)
 VIEWPORT_SIZE = (600,400)
 gamewindow = pygame.display.set_mode(GAMEWINDOW_SIZE)
-display = pygame.Surface(VIEWPORT_SIZE) #A scaled surface for rendering
+display = pygame.Surface(VIEWPORT_SIZE)
 
 pygame.display.set_caption("Gold Mine")
 
@@ -42,7 +42,7 @@ def generate_map(path):
                     map[h][w] = 1
             elif h == grasslevel:  # grass tile
                 map[h][w] = 2
-            elif h < grasslevel:  # border blocker
+            elif h < grasslevel:
                 map[h][w] = 0
 
     maptxtfile = open(path, 'w')
@@ -54,17 +54,30 @@ def generate_map(path):
 
     maptxtfile.close()
 
+def save_map(path, game_map):
+    maptxtfile = open(path, 'w')
+
+    for h in range(0, len(game_map)):
+        for w in range(0, len(game_map[0])):
+            maptxtfile.write(str(game_map[h][w]))
+        maptxtfile.write('\n')
+
+    maptxtfile.close()
+
 def load_map(path):
     f = open(path,'r')
     data = f.read()
     f.close()
-    game_mapa = []
-    seed_mapa = []
+    game_map1 = []
+    seed_map1 = []
     data = data.split('\n')
-    for row in range(0, len(data)-1):
-        game_mapa.append(list(data[row]))
-        seed_mapa.append(list(data[row]))
-    return game_mapa, seed_mapa
+    for row in range(0, len(data)):
+        game_map1.append(list(data[row]))
+        seed_map1.append(list(data[row]))
+
+    game_map2 = [x for x in game_map1 if x != []]
+    seed_map2 = [x for x in seed_map1 if x != []]
+    return game_map2, seed_map2
 
 game_map, seed_map = load_map('map.txt')
 
@@ -379,5 +392,7 @@ while run:
     pygame.display.update()
     clock.tick(60)
 
+#generate_map('map.txt')
+#save_map('map.txt', game_map)
 pygame.quit()
 sys.exit()
