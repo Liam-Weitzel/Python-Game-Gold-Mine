@@ -19,6 +19,8 @@ building_tiles_x = [6, 7, 8, 14, 15, 16, 17, 18, 19, 20, 21, 24, 25, 26, 27, 28]
 map_width = 30
 map_height_chunk = 100
 grasslevel = 5
+game_map = []
+seed_map = []
 
 def generate_map(path):
     map = [[0] * map_width for i in range(map_height_chunk)]
@@ -56,37 +58,41 @@ def load_map(path):
     f = open(path,'r')
     data = f.read()
     f.close()
+    game_mapa = []
+    seed_mapa = []
     data = data.split('\n')
-    game_map = []
-    seed_map = []
     for row in range(0, len(data)-1):
-        game_map.append(list(data[row]))
-        seed_map.append(list(data[row]))
-    return game_map, seed_map
+        game_mapa.append(list(data[row]))
+        seed_mapa.append(list(data[row]))
+    return game_mapa, seed_mapa
 
 game_map, seed_map = load_map('map.txt')
 
 def generate_chunk(height, width):
-    map_chunk = [[0] * width for i in range(height)]
+    map_chunka = [[0] * width for i in range(height)]
+    map_chunkb = [[0] * width for i in range(height)]
 
     for h in range(0, height):
         for w in range(0, width):
             r = random.random()
             if r > 0.75:  # ore or blank tile
                 if r > 0.98:
-                    map_chunk[h][w] = '5'
+                    map_chunka[h][w] = '5'
+                    map_chunkb[h][w] = '5'
                 elif r > 0.95:
-                    map_chunk[h][w] = '4'
+                    map_chunka[h][w] = '4'
+                    map_chunkb[h][w] = '4'
                 elif r > 0.90:
-                    map_chunk[h][w] = '3'
+                    map_chunka[h][w] = '3'
+                    map_chunkb[h][w] = '3'
                 elif r > 0.75:
-                    map_chunk[h][w] = '0'
+                    map_chunka[h][w] = '0'
+                    map_chunkb[h][w] = '0'
             else:  # dirt tile
-                map_chunk[h][w] = '1'
+                map_chunka[h][w] = '1'
+                map_chunkb[h][w] = '1'
 
-    for row in map_chunk:
-        game_map.append(row)
-        seed_map.append(row)
+    return map_chunka, map_chunkb
 
 def load_sprites(spritesheet, filenames, r, g, b, scalex, scaley):
     arr = []
@@ -291,10 +297,12 @@ def remove_tile(player_rect, collisions, collidingtiles, collidingtilesxy):
         if (curr_closest_xy[0]-1 not in building_tiles_x) or (curr_closest_xy[1]-1 != grasslevel):
             game_map[curr_closest_xy[1] - 1][curr_closest_xy[0] - 1] = '0'
 
-    if curr_closest_xy[1] >= len(game_map)-10:
-        generate_chunk(map_height_chunk, map_width)
-        #a = [(i,j) for i, row in enumerate(seed_map) for j, x in enumerate(row) if game_map[i][j] != x]
-        #print(a)
+    if curr_closest_xy[1] >= len(seed_map)-10:
+        gamechunk, seedchunk = generate_chunk(map_height_chunk, map_width)
+
+        seed_map.extend(seedchunk)
+        game_map.extend(gamechunk)
+
 def movement(player_rect):
     player_movement = [0, 0]
     if right_pressed:
@@ -333,7 +341,7 @@ def movement(player_rect):
     else:
         velocity[0] = velocity[0] * 0.95
 
-    if player_rect[0] > map_width*35-25 or player_rect[0] < 0: #limits player movement in X axis, 30 is map width in tiles, 35 is tile width in px
+    if player_rect.x > ((len(game_map[0]) * grass[0].get_width()) - player_img.get_width()) or player_rect[0] < 0: #limits player movement in X axis, 30 is map width in tiles, 35 is tile width in px
         velocity[0] = 0
 
 run = True
