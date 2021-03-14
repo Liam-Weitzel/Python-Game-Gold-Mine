@@ -2,6 +2,7 @@ import pygame, sys, random
 from spritesheets.spritesheet import Spritesheet
 from pygame.locals import *
 
+
 clock = pygame.time.Clock()
 pygame.init()
 
@@ -125,6 +126,11 @@ player_img = pygame.image.load('sprites/player/version1/player.png').convert()
 player_img.set_colorkey((255, 255, 255))
 player_img = pygame.transform.scale(player_img, (25, 25))
 player_rect = pygame.Rect(100,100,player_img.get_width(),player_img.get_height())
+
+player_drill_animation_spritesheet = Spritesheet('spritesheets/player')
+player_drill_left = load_sprites(player_drill_animation_spritesheet, ['left1', 'left2'], 0,0,0,37, 27)
+player_drill_right = load_sprites(player_drill_animation_spritesheet, ['right1', 'right2'], 0, 0,0,37,27)
+player_drill_bottom = load_sprites(player_drill_animation_spritesheet, ['down1', 'down2'], 0, 0, 0, 25, 37)
 
 terrain_spritesheet = Spritesheet('spritesheets/terrain')
 grass = load_sprites(terrain_spritesheet, ['grass1', 'grass2', 'grass3', 'grass4', 'grass5', 'grass6'], 255, 255, 255, 35, 35)
@@ -286,11 +292,52 @@ def blit_sprites(scroll):
 
     return tile_rects, tile_xy
 
+def drill_animation_loop(orientation, drill_tile):
+	pygame.image.save(display, 'animation_loop.jpg')
+	currwindow = pygame.image.load('animation_loop.jpg').convert()
+
+	xflip = 1
+	if orientation == 'bottom':
+		for i in range(0,16):
+			xflip = 1 - xflip
+			display.blit(currwindow, (0, 0))
+			pygame.time.wait(50)
+			display.blit(player_drill_bottom[xflip], (player_rect[0] - scroll[0], player_rect[1] - scroll[1]))
+			player_rect[1] = player_rect[1]+1
+			if player_rect[0] > drill_tile[0]*dirt[0].get_width()+dirt[0].get_width()/6:
+				player_rect[0] = -((player_rect[0]-drill_tile[0]*dirt[0].get_width()-dirt[0].get_width()/6)/20)+player_rect[0]
+			elif player_rect[0] < drill_tile[0]*dirt[0].get_width()+(dirt[0].get_width()*5/6):
+				player_rect[0] = player_rect[0]+((drill_tile[0]*dirt[0].get_width()+(dirt[0].get_width()*5/6)-player_rect[0])/20)
+			gamewindow.blit(pygame.transform.scale(display,GAMEWINDOW_SIZE),(0,0))
+			pygame.display.update()
+			clock.tick(60)
+	elif orientation ==  'right':
+		for i in range(0,20):
+			xflip = 1 - xflip
+			display.blit(currwindow, (0, 0))
+			pygame.time.wait(50)
+			display.blit(player_drill_right[xflip], (player_rect[0] - scroll[0], player_rect[1]-2 - scroll[1]))
+			player_rect[0] = player_rect[0]+1
+			gamewindow.blit(pygame.transform.scale(display,GAMEWINDOW_SIZE),(0,0))
+			pygame.display.update()
+			clock.tick(60)
+	elif orientation == 'left':
+		for i in range(0,20):
+			xflip = 1 - xflip
+			display.blit(currwindow, (0, 0))
+			pygame.time.wait(50)
+			display.blit(player_drill_left[xflip], (player_rect[0] - player_img.get_width()/2 - scroll[0], player_rect[1]-2 - scroll[1]))
+			player_rect[0] = player_rect[0]-1
+			gamewindow.blit(pygame.transform.scale(display,GAMEWINDOW_SIZE),(0,0))
+			pygame.display.update()
+			clock.tick(60)
+
 def remove_tile(player_rect, collisions, collidingtiles, collidingtilesxy):
     curr_closest_tile = collidingtiles[0]
     curr_closest_int = grass[0].get_width()
     curr_closest_xy = collidingtilesxy[0]
     xy_count = 0
+
     for tile in collidingtiles:
         closecheck = abs(
             (tile[0] + (grass[0].get_width() / 2)) - (player_rect[0] + (player_img.get_width() / 2)))
@@ -302,13 +349,16 @@ def remove_tile(player_rect, collisions, collidingtiles, collidingtilesxy):
 
     if down_pressed == True and collisions['bottom'] == True:
         if (curr_closest_xy[0] not in building_tiles_x) or (curr_closest_xy[1] != grasslevel):
+            drill_animation_loop('bottom', curr_closest_xy)
             game_map[curr_closest_xy[1]][curr_closest_xy[0]] = '0'
     elif right_pressed == True and collisions['right'] == True:
         if (curr_closest_xy[0]+1 not in building_tiles_x) or (curr_closest_xy[1]-1 != grasslevel):
-            game_map[curr_closest_xy[1] - 1][curr_closest_xy[0] + 1] = '0'
+        	drill_animation_loop('right', curr_closest_xy)
+        	game_map[curr_closest_xy[1] - 1][curr_closest_xy[0] + 1] = '0'
     elif left_pressed == True and collisions['left'] == True:
         if (curr_closest_xy[0]-1 not in building_tiles_x) or (curr_closest_xy[1]-1 != grasslevel):
-            game_map[curr_closest_xy[1] - 1][curr_closest_xy[0] - 1] = '0'
+        	drill_animation_loop('left', curr_closest_xy)
+        	game_map[curr_closest_xy[1] - 1][curr_closest_xy[0] - 1] = '0'
 
     if curr_closest_xy[1] >= len(seed_map)-10:
         gamechunk, seedchunk = generate_chunk(map_height_chunk, map_width)
