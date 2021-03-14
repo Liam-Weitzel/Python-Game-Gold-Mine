@@ -2,7 +2,6 @@ import pygame, sys, random
 from spritesheets.spritesheet import Spritesheet
 from pygame.locals import *
 
-
 clock = pygame.time.Clock()
 pygame.init()
 
@@ -407,6 +406,15 @@ def movement(player_rect):
     if player_rect.x > ((len(game_map[0]) * grass[0].get_width()) - player_img.get_width()) or player_rect[0] < 0: #limits player movement in X axis, 30 is map width in tiles, 35 is tile width in px
         velocity[0] = 0
 
+def blit_player():
+	display.blit(player_drill_right[0],(player_rect.x-scroll[0]-6,player_rect.y-scroll[1]-2))
+	#fly animation
+	#falling animation
+	#nose dive animation
+	#----Use Y velocity to determine which animation to play?
+
+	#driving animation left and right
+
 run = True
 while run:
     display.fill((255,255,255))
@@ -414,7 +422,7 @@ while run:
     scroll = camera_movement()
     tile_rects, tile_xy = blit_sprites(scroll)
     movement(player_rect)
-    display.blit(player_img,(player_rect.x-scroll[0],player_rect.y-scroll[1]))
+    blit_player()
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
