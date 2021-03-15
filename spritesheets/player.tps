@@ -181,8 +181,8 @@
         </struct>
         <key>individualSpriteSettings</key>
         <map type="IndividualSpriteSettingsMap">
-            <key type="filename">down1.png</key>
-            <key type="filename">down2.png</key>
+            <key type="filename">../sprites/player/version2/down1.png</key>
+            <key type="filename">../sprites/player/version2/down2.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
                 <point_f>0.5,0.5</point_f>
@@ -197,10 +197,32 @@
                 <key>scale9FromFile</key>
                 <false/>
             </struct>
-            <key type="filename">left1.png</key>
-            <key type="filename">left2.png</key>
-            <key type="filename">right1.png</key>
-            <key type="filename">right2.png</key>
+            <key type="filename">../sprites/player/version2/flyleft1.png</key>
+            <key type="filename">../sprites/player/version2/flyleft2.png</key>
+            <key type="filename">../sprites/player/version2/flyleft3.png</key>
+            <key type="filename">../sprites/player/version2/flyright1.png</key>
+            <key type="filename">../sprites/player/version2/flyright2.png</key>
+            <key type="filename">../sprites/player/version2/flyright3.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0.5,0.5</point_f>
+                <key>spriteScale</key>
+                <double>1</double>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>9,9,19,19</rect>
+                <key>scale9Paddings</key>
+                <rect>9,9,19,19</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
+            <key type="filename">../sprites/player/version2/left1.png</key>
+            <key type="filename">../sprites/player/version2/left2-odd.png</key>
+            <key type="filename">../sprites/player/version2/left2.png</key>
+            <key type="filename">../sprites/player/version2/right1.png</key>
+            <key type="filename">../sprites/player/version2/right2-odd.png</key>
+            <key type="filename">../sprites/player/version2/right2.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
                 <point_f>0.5,0.5</point_f>
@@ -218,12 +240,20 @@
         </map>
         <key>fileList</key>
         <array>
-            <filename>down1.png</filename>
-            <filename>down2.png</filename>
-            <filename>left1.png</filename>
-            <filename>left2.png</filename>
-            <filename>right1.png</filename>
-            <filename>right2.png</filename>
+            <filename>../sprites/player/version2/down1.png</filename>
+            <filename>../sprites/player/version2/down2.png</filename>
+            <filename>../sprites/player/version2/flyleft1.png</filename>
+            <filename>../sprites/player/version2/flyleft2.png</filename>
+            <filename>../sprites/player/version2/flyleft3.png</filename>
+            <filename>../sprites/player/version2/flyright1.png</filename>
+            <filename>../sprites/player/version2/flyright2.png</filename>
+            <filename>../sprites/player/version2/flyright3.png</filename>
+            <filename>../sprites/player/version2/left1.png</filename>
+            <filename>../sprites/player/version2/left2-odd.png</filename>
+            <filename>../sprites/player/version2/left2.png</filename>
+            <filename>../sprites/player/version2/right1.png</filename>
+            <filename>../sprites/player/version2/right2-odd.png</filename>
+            <filename>../sprites/player/version2/right2.png</filename>
         </array>
         <key>ignoreFileList</key>
         <array/>

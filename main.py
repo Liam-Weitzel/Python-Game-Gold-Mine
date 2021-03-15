@@ -21,6 +21,7 @@ map_height_chunk = 100
 grasslevel = 5
 game_map = []
 seed_map = []
+last_player_blit = 'left'
 
 def generate_map(path):
     map = [[0] * map_width for i in range(map_height_chunk)]
@@ -130,6 +131,10 @@ player_drill_animation_spritesheet = Spritesheet('spritesheets/player')
 player_drill_left = load_sprites(player_drill_animation_spritesheet, ['left1', 'left2'], 0,0,0,37, 27)
 player_drill_right = load_sprites(player_drill_animation_spritesheet, ['right1', 'right2'], 0, 0,0,37,27)
 player_drill_bottom = load_sprites(player_drill_animation_spritesheet, ['down1', 'down2'], 0, 0, 0, 25, 37)
+player_drive_left = load_sprites(player_drill_animation_spritesheet, ['left2', 'left2-odd'], 0, 0, 0, 37, 27)
+player_drive_right = load_sprites(player_drill_animation_spritesheet, ['right2', 'right2-odd'], 0, 0, 0, 37, 27)
+player_fly_left = load_sprites(player_drill_animation_spritesheet, ['flyleft1', 'flyleft2', 'flyleft3'], 0, 0, 0, 37, 37)
+player_fly_right = load_sprites(player_drill_animation_spritesheet, ['flyright1', 'flyright2', 'flyright3'], 0, 0, 0, 37, 37)
 
 terrain_spritesheet = Spritesheet('spritesheets/terrain')
 grass = load_sprites(terrain_spritesheet, ['grass1', 'grass2', 'grass3', 'grass4', 'grass5', 'grass6'], 255, 255, 255, 35, 35)
@@ -406,14 +411,33 @@ def movement(player_rect):
     if player_rect.x > ((len(game_map[0]) * grass[0].get_width()) - player_img.get_width()) or player_rect[0] < 0: #limits player movement in X axis, 30 is map width in tiles, 35 is tile width in px
         velocity[0] = 0
 
-def blit_player():
-	display.blit(player_drill_right[0],(player_rect.x-scroll[0]-6,player_rect.y-scroll[1]-2))
-	#fly animation
-	#falling animation
-	#nose dive animation
-	#----Use Y velocity to determine which animation to play?
+def blit_player(last_player_blit, velocity):
+	if down_pressed == True:
+		display.blit(player_drill_bottom[1],(player_rect.x-scroll[0],player_rect.y-scroll[1]))
+		#nose dive animation, same as drilling down
+	elif up_pressed == True:
+		if (right_pressed == True):
+			display.blit(player_fly_right[0],(player_rect.x-scroll[0]-6,player_rect.y-scroll[1]-2))
+			last_player_blit = 'right'
+		elif left_pressed == True:
+			display.blit(player_fly_left[0],(player_rect.x-scroll[0]-6,player_rect.y-scroll[1]-2))
+			last_player_blit = 'left'
+		elif left_pressed == False and right_pressed == False:
+			if last_player_blit == 'right':
+				display.blit(player_fly_right[0],(player_rect.x-scroll[0]-6,player_rect.y-scroll[1]-2))
+			elif last_player_blit == 'left':
+				display.blit(player_fly_left[0],(player_rect.x-scroll[0]-6,player_rect.y-scroll[1]-2))
+		#fly animation, left and right
+	elif (right_pressed == True) or (last_player_blit == 'right' and left_pressed == False):
+		display.blit(player_drill_right[1],(player_rect.x-scroll[0]-6,player_rect.y-scroll[1]-2))
+		last_player_blit = 'right'
+		#drive left animation
+	elif (left_pressed == True) or (last_player_blit == 'left' and right_pressed == False):
+		display.blit(player_drill_left[1],(player_rect.x-scroll[0]-6,player_rect.y-scroll[1]-2))
+		last_player_blit = 'left'
+		#drive right animation
 
-	#driving animation left and right
+	return last_player_blit
 
 run = True
 while run:
@@ -422,7 +446,7 @@ while run:
     scroll = camera_movement()
     tile_rects, tile_xy = blit_sprites(scroll)
     movement(player_rect)
-    blit_player()
+    last_player_blit = blit_player(last_player_blit, velocity)
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
