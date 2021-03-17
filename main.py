@@ -4,7 +4,9 @@ from pygame.locals import *
 
 clock = pygame.time.Clock()
 pygame.init()
+pygame.font.init()
 
+defaultfont = pygame.font.SysFont('default',23)
 GAMEWINDOW_SIZE = (1200,800)
 VIEWPORT_SIZE = (600,400)
 gamewindow = pygame.display.set_mode(GAMEWINDOW_SIZE)
@@ -24,6 +26,7 @@ game_map = []
 seed_map = []
 last_player_blit = 'left'
 animation_iter = 1
+inventory = [0, 0, 0, 0, 0, 0]
 
 def generate_map(path):
     map = [[0] * map_width for i in range(map_height_chunk)]
@@ -355,15 +358,18 @@ def remove_tile(player_rect, collisions, collidingtiles, collidingtilesxy):
 
     if down_pressed == True and collisions['bottom'] == True:
         if (curr_closest_xy[0] not in building_tiles_x) or (curr_closest_xy[1] != grasslevel):
-            drill_animation_loop('bottom', curr_closest_xy)
-            game_map[curr_closest_xy[1]][curr_closest_xy[0]] = '0'
+        	drill_animation_loop('bottom', curr_closest_xy)
+        	inventory[int(game_map[curr_closest_xy[1]][curr_closest_xy[0]])] += 1
+        	game_map[curr_closest_xy[1]][curr_closest_xy[0]] = '0'
     elif right_pressed == True and collisions['right'] == True:
         if (curr_closest_xy[0]+1 not in building_tiles_x) or (curr_closest_xy[1]-1 != grasslevel):
-        	drill_animation_loop('right', curr_closest_xy)
+       		drill_animation_loop('right', curr_closest_xy)
+       		inventory[int(game_map[curr_closest_xy[1] - 1][curr_closest_xy[0] + 1])] += 1
         	game_map[curr_closest_xy[1] - 1][curr_closest_xy[0] + 1] = '0'
     elif left_pressed == True and collisions['left'] == True:
         if (curr_closest_xy[0]-1 not in building_tiles_x) or (curr_closest_xy[1]-1 != grasslevel):
         	drill_animation_loop('left', curr_closest_xy)
+        	inventory[int(game_map[curr_closest_xy[1] - 1][curr_closest_xy[0] - 1])] += 1
         	game_map[curr_closest_xy[1] - 1][curr_closest_xy[0] - 1] = '0'
 
     if curr_closest_xy[1] >= len(seed_map)-10:
@@ -459,12 +465,22 @@ def blit_player(last_player_blit, velocity, animation_iter):
 
 	return last_player_blit, animation_iter
 
+def blit_text():
+	coppercounter = defaultfont.render('copper: ' + str(inventory[3]), False, (0,0,0))
+	ironcounter = defaultfont.render('iron: ' + str(inventory[4]), False, (0,0,0))
+	goldcounter = defaultfont.render('gold: ' + str(inventory[5]), False, (0,0,0))
+
+	display.blit(coppercounter,(10,10))
+	display.blit(ironcounter,(10,25))
+	display.blit(goldcounter,(10,40))
+
 run = True
 while run:
     display.fill((255,255,255))
 
     scroll = camera_movement()
     tile_rects, tile_xy = blit_sprites(scroll)
+    blit_text()
     movement(player_rect)
     last_player_blit, animation_iter = blit_player(last_player_blit, velocity, animation_iter)
 
@@ -503,3 +519,5 @@ while run:
 #save_map('map.txt', game_map)
 pygame.quit()
 sys.exit()
+
+#this is no mac THISIS MINT
