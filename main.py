@@ -1,33 +1,45 @@
+#importing all neccesary libraries
 import pygame, sys, random
 from spritesheets.spritesheet import Spritesheet
 from pygame.locals import *
 
+
+#initializing pygame clock and text font families
 clock = pygame.time.Clock()
 pygame.init()
 pygame.font.init()
 
 defaultfont = pygame.font.SysFont('default',23)
+#setting global variable default font to system default font with fontsize 23
 GAMEWINDOW_SIZE = (1200,800)
 VIEWPORT_SIZE = (600,400)
 gamewindow = pygame.display.set_mode(GAMEWINDOW_SIZE)
+#setting the pygame display to the size of GAMEWINDOW_SIZE
 display = pygame.Surface(VIEWPORT_SIZE)
+#setting the pygame surface to the size of VIEWPORT_SIZE
+
 
 pygame.display.set_caption("Gold Mine")
+#setting the caption of the game window to Gold Mine
 
-gameloopiter = 0
-right_pressed = left_pressed = up_pressed = down_pressed = False
-velocity = [0,0]
+#Initializing global variables
+gameloopiter = 0 #game loop counter
+right_pressed = left_pressed = up_pressed = down_pressed = False #all keys initialized as false
+velocity = [0,0] #initializing velocity to be 0,0
 true_scroll = [0,0]
-building_tiles_x = [6, 7, 8, 14, 15, 16, 17, 18, 19, 20, 21, 24, 25, 26, 27, 28]
+building_tiles_x = [6, 7, 8, 14, 15, 16, 17, 18, 19, 20, 21, 24, 25, 26, 27, 28] #declaring array for tiles in the game map where the player is not allowed to break tiles
 map_width = 30
-map_height_chunk = 100
+map_height_chunk = 100 #declaring the chunk size, if the player reaches 100y a new chunk will be generated
 grasslevel = 5
 game_map = []
 seed_map = []
-last_player_blit = 'left'
+last_player_blit = 'left' #initializing the last displayed image to be the 'left' version of the player sprite
 animation_iter = 1
-inventory = [0, 0, 0, 0, 0, 0]
+inventory = [0, 0, 0, 0, 0, 0] #initializing the inventory to be empty
 
+#This function procedurally and randomly generates the map using the built in .random() function from python, 
+#based on what the value of the random number is, an element in the 'game_map' 2d array will get a certain value in that position defining
+#the type of tile that will be blitted in that space
 def generate_map(path):
     map = [[0] * map_width for i in range(map_height_chunk)]
 
@@ -51,16 +63,17 @@ def generate_map(path):
             elif h < grasslevel:
                 map[h][w] = 0
 
-    maptxtfile = open(path, 'w')
+    maptxtfile = open(path, 'w') #opening the text file in which the map is stored
 
-    for h in range(0, map_height_chunk):
+    for h in range(0, map_height_chunk): #writing the map to the text file
         for w in range(0, map_width):
             maptxtfile.write(str(map[h][w]))
         maptxtfile.write('\n')
 
     maptxtfile.close()
 
-def save_map(path, game_map):
+#this function saves the current map 2d array to the map text file
+def save_map(path, game_map): 
     maptxtfile = open(path, 'w')
 
     for h in range(0, len(game_map)):
@@ -70,6 +83,7 @@ def save_map(path, game_map):
 
     maptxtfile.close()
 
+#this function loads the map in the map text file in to the global map 2d array
 def load_map(path):
     f = open(path,'r')
     data = f.read()
@@ -87,6 +101,7 @@ def load_map(path):
 
 game_map, seed_map = load_map('map.txt')
 
+#this function generates a chunk of 100 tiles similarly to the generate_map function and appends it to the bottom of the current 2d map array
 def generate_chunk(height, width):
     map_chunka = [[0] * width for i in range(height)]
     map_chunkb = [[0] * width for i in range(height)]
@@ -113,6 +128,7 @@ def generate_chunk(height, width):
 
     return map_chunka, map_chunkb
 
+#this function loads sprites using the spritesheet class in spritesheet.py
 def load_sprites(spritesheet, filenames, r, g, b, scalex, scaley):
     arr = []
     for x in filenames:
@@ -123,6 +139,7 @@ def load_sprites(spritesheet, filenames, r, g, b, scalex, scaley):
 
     return arr
 
+#loading all images from the spritesheets in the spritesheets folder using the load_sprites and Spritesheet class
 buildings_spritesheet = Spritesheet('spritesheets/buildings')
 buildings = [buildings_spritesheet.parse_sprite('factory.png', 255, 255, 255), buildings_spritesheet.parse_sprite('garage.png', 255, 255, 255),buildings_spritesheet.parse_sprite('gas-station.png', 255, 255, 255)]
 buildings[2] = pygame.transform.scale(buildings[2], (120, 120))
@@ -168,12 +185,15 @@ bg3.set_colorkey((121,109,77))
 bg4.set_colorkey((156,122,93))
 bg5.set_colorkey((255, 255, 255))
 backgrounds = [bg0, bg1, bg2, bg3, bg4, bg5]
+#parralax effect on background images the numbers < 1 are the multipliers by which they are supposed to move in correlation with player movement
 background_objects = [[0.4, 0.5, [-500,-1600,1000,1000]],[0.5, 0.6, [0,0,1000,1000]],[0.6, 0.7,[0,0,1000,1000]],[0.75, 0.8,[0,0,1000,1000]],[0.85, 0.9,[0,0,1000,1000]], [0.9, 0.97,[0,0,1000,1000]]]
 
+#underground background
 undergroundbg = pygame.image.load('sprites/backgrounds/underground/3.png').convert()
 undergroundbg = pygame.transform.scale(undergroundbg, (1100, 450))
 undergroundbg_obj = [1, 1, [0,175,1000,1000]]
 
+#function that returns a list of colliding tiles with the player for rectangle to rectangle collision
 def collision_test(rect,tiles, tile_xy):
     hit_list = []
     hit_list_xy = []
@@ -185,6 +205,7 @@ def collision_test(rect,tiles, tile_xy):
         xycount += 1
     return hit_list, hit_list_xy
 
+#function that adds constraints to player movement and changes player position based on user input
 def move(rect,movement,tiles, tile_xy):
     collision_types = {'top':False,'bottom':False,'right':False,'left':False}
     rect.x += movement[0]
@@ -207,6 +228,8 @@ def move(rect,movement,tiles, tile_xy):
             collision_types['top'] = True
     return rect, collision_types, hit_list, hit_list_xy
 
+#function that returns camera movement by showing the section of VIEWPORT_SIZE in the GAMEWINDOW of pygame,
+#it is done with arbituary divisions to have a lagging behind effect or, dragging effect.
 def camera_movement():
     if VIEWPORT_SIZE[0]/2 < player_rect.x < ((len(game_map[0]) * grass[0].get_width()) - VIEWPORT_SIZE[0] / 2 - player_img.get_width()):
         true_scroll[0] += (player_rect.x-true_scroll[0]-(VIEWPORT_SIZE[0]/2)+(player_img.get_width()/2))/15
@@ -222,6 +245,7 @@ def camera_movement():
 
     return scroll
 
+#function that blits all sprites according to the current viewport and scroll that is defined by the player position in the gamewindow
 def blit_sprites(scroll):
     counter = 0
     for background_object in background_objects:
@@ -301,6 +325,8 @@ def blit_sprites(scroll):
 
     return tile_rects, tile_xy
 
+#function that saves an image of the current screen and fakes a 'drilling' animation by showing two different images
+#of the drill in rapid succesion
 def drill_animation_loop(orientation, drill_tile):
 	pygame.image.save(display, 'animation_loop.jpg')
 	currwindow = pygame.image.load('animation_loop.jpg').convert()
@@ -341,6 +367,7 @@ def drill_animation_loop(orientation, drill_tile):
 			pygame.display.update()
 			clock.tick(60)
 
+#this function removes a specified tile from the map 2d array based on what tile the player is currently colliding with
 def remove_tile(player_rect, collisions, collidingtiles, collidingtilesxy):
     curr_closest_tile = collidingtiles[0]
     curr_closest_int = grass[0].get_width()
@@ -378,6 +405,7 @@ def remove_tile(player_rect, collisions, collidingtiles, collidingtilesxy):
         seed_map.extend(seedchunk)
         game_map.extend(gamechunk)
 
+#changes velocity of player based on user input, this gets restrained more in the move() function
 def movement(player_rect):
     player_movement = [0, 0]
     if right_pressed:
@@ -419,6 +447,7 @@ def movement(player_rect):
     if player_rect.x > ((len(game_map[0]) * grass[0].get_width()) - player_img.get_width()) or player_rect[0] < 0: #limits player movement in X axis, 30 is map width in tiles, 35 is tile width in px
         velocity[0] = 0
 
+#function that blits the player in the correct position taking velocity and the current/ last animation image into account
 def blit_player(last_player_blit, velocity, animation_iter):
 	if down_pressed == True:
 		display.blit(player_drill_bottom[1],(player_rect.x-scroll[0],player_rect.y-scroll[1]))
@@ -465,6 +494,7 @@ def blit_player(last_player_blit, velocity, animation_iter):
 
 	return last_player_blit, animation_iter
 
+#function that blits the text on the screen with the defaultfont global variable
 def blit_text():
 	coppercounter = defaultfont.render('copper: ' + str(inventory[3]), False, (0,0,0))
 	ironcounter = defaultfont.render('iron: ' + str(inventory[4]), False, (0,0,0))
@@ -474,6 +504,7 @@ def blit_text():
 	display.blit(ironcounter,(10,25))
 	display.blit(goldcounter,(10,40))
 
+#game loop
 run = True
 while run:
     display.fill((255,255,255))
@@ -484,6 +515,7 @@ while run:
     movement(player_rect)
     last_player_blit, animation_iter = blit_player(last_player_blit, velocity, animation_iter)
 
+    #event listener for user input WASD
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             run = False
@@ -506,18 +538,21 @@ while run:
             if event.key == 115: #S key
                 down_pressed = False
 
+    #updating display at the end of the gameloop
     gamewindow.blit(pygame.transform.scale(display,GAMEWINDOW_SIZE),(0,0))
     pygame.display.update()
+    #setting frames per second
     clock.tick(60)
 
+    #condition to prevent integer overflow by setting gameloopiter to 0 after it reaches 9999
     if gameloopiter > 9999: 
     	gameloopiter = 0
     else:
     	gameloopiter += 1
 
-#generate_map('map.txt')
-#save_map('map.txt', game_map)
-pygame.quit()
-sys.exit()
+#generate_map('map.txt') #this will generated a new map although is unused in the current version of the game
+#save_map('map.txt', game_map) #this will save the current map to map.txt although is unused in the current version of the game
 
-#this is no mac THISIS MINT
+#if run = False and gameloop is not run, pygame quits which closes the game
+pygame.quit() 
+sys.exit()
